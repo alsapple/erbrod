@@ -1,19 +1,52 @@
-a {
-    text-decoration-line: none;
-  }
-  a:link {
-    color : black;
-  }
-  a:visited {
-    color : black;
-  }
-  a:hover {
-    color : rgb(215, 154, 255);
-  }
-  a:active {
-    color : rgb(215, 154, 255)
-  }
+body {
+    font-family: 'Apple SD Gothic Neo', sans-serif;
+    background-color: #f4f6f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
 
-  .no_dot {
-    list-style-type: none;
-  }
+.weather-container {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 320px;
+}
+
+h1 {
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+.search-box {
+    margin-bottom: 20px;
+}
+
+select, button {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-right: 5px;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.weather-info p {
+    font-size: 16px;
+    margin: 10px 0;
+    color: #333;
+}
