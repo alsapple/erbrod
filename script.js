@@ -1,4 +1,4 @@
-const API_KEY = '본인의_디코딩된_인증키를_여기에_넣으세요';
+const API_KEY = 'tGMuabKhkbKLnzpM8CFURLyFrL1TIFdqHd7kl2nFTjvD8RsI3oX+DQ6wec54tPtF4ScdBDivxovt9aSlNiBA9A==';
 
 // 주요 지역별 기상청 격자 X, Y 좌표
 const regions = {
