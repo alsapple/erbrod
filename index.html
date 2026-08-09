@@ -1,86 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="index.css" />
-    <title>Document</title>
+    <title>우리 동네 기온 확인</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>&nbsp;이터널리턴 파트너&크리에이터 방송 주소 모음</h1>
-    
-    <a>
-        <h2>&nbsp;이터널리턴 공식</h2>
-            <ul class='no_dot'>
-                <li><A href="https://www.youtube.com/@EternalReturnKR"> 이터널리턴 공식 유튜브 </A></li>
-                <li><A href="https://chzzk.naver.com/d9c65c92b701450ff4e6c86b0ca7c932"> 이터널리턴 공식 채널(치지직) </A></li>
-                <li><A href="https://ch.sooplive.co.kr/afertv">  이터널리턴 공식 채널(숲) </A></li>
-            </ul>
-    </a>
-    <h1>&nbsp;이터널리턴 파트너 목록</h1>
-    <a>
-        <h2>&nbsp;키로</h2>
-            <ul class='no_dot'>
-                <li><img src="kiro.jpg" alt="키로1" height="100" width="100"></li>
-                <li><A href=" https://www.youtube.com/@%ED%82%A4%EB%A1%9C "> 키로 유튜브</A></li>
-                <li><A href=" https://chzzk.naver.com/7bbd9a1035164d65ae5c4960af75c0fa "> 키로 치지직</A></li>
-            </ul>
-    </a>
-    <a>
-        <h2>&nbsp;정누리</h2>
-            <ul class='no_dot'>
-                <li><img src="jnr.jpg" alt="정누리" height="100" width="100"></li>
-                <li><A href="https://www.youtube.com/@Jnuri"> 정누리 유튜브</A></li>
-                <li><A href="https://chzzk.naver.com/eb01d9ef74cb7cf32c2b119da1bbcb2c">정누리 치지직 </A></li>
-            </ul>
-    </a>
-    <a>
-        <h2>&nbsp;톱니고래</h2>
-            <ul class='no_dot'>
-                <li><img src="tngr.jpg" alt="톱니고래" height="100" width="100"></li>
-                <li><A href="https://www.youtube.com/@%ED%86%B1%EB%8B%88%EA%B3%A0%EB%9E%98"> 톱니고래 유튜브</A></li>
-            </ul>
-    </a>
-    <a>
-        <h2>&nbsp;농루트(김도형 해설)</h2>
-            <ul class='no_dot'>
-                <li><img src="nrt.jpg" alt="농루트트" height="100" width="100"></li>
-                <li><A href="https://www.youtube.com/@%EB%86%8D%EB%A3%A8%ED%8A%B8"> 농루트 유튜브</A></li>
-                <li><A href="https://chzzk.naver.com/716d19848f0a23c2b9bf4350414d5917"> 농루트 치지직</A></li>
-            </ul>
-    </a>
-    <a>
-        <h2>&nbsp;지슥2</h2>
-            <ul class='no_dot'>
-                <li><img src="gs2.jpg" alt="지슥2" height="100" width="100"></li>
-                <li><A href="https://www.youtube.com/@%EC%A7%80%EC%8A%A51"> 지슥2 유튜브</A></li>
-                <li><A href="https://chzzk.naver.com/4220f38359485fa2530392b36cb62e31"> 지슥2 치지직</A></li>
-            </ul>
-    </a>
-    <a>
-        <h2>&nbsp;네브짱</h2>
-            <ul class='no_dot'>
-                <li><img src="nev.jpg" alt="네브짱" height="100" width="100"></li>
-                <li><A href="https://www.youtube.com/@ldy818"> 네브짱 유튜브</A></li>
-                <li><A href="https://chzzk.naver.com/f0b10f21e94c0bb8715111f5436cdecb"> 네브짱 치지직</A></li>
-            </ul>
-    </a>
-    <a>
-        <h2>&nbsp;사텐</h2>
-            <ul class='no_dot'>
-                <li><img src="st.png" alt="사텐" height="100" width="100"></li>
-                <li><A href="https://www.youtube.com/@user-saten"> 사텐 유튜브</A></li>
-                <li><A href="https://chzzk.naver.com/7d3138382bbf1a356437586e72a8290f"> 사텐 치지직</A></li>
-            </ul>
-    </a>
-    <a>
-        <h2>&nbsp;우말</h2>
-            <ul class='no_dot'>
-                <li><img src="um.jpg" alt="우말말" height="100" width="100"></li>
-                <li><A href="https://www.youtube.com/@%EC%9A%B0%EB%A7%90/videos"> 우말 유튜브</A></li>
-                <li><A href="https://chzzk.naver.com/00c4d5bbb8b8b874732066dc7e49b47a"> 우말 치지직</A></li>
-            </ul>
-    </a>
-
+    <div class="weather-container">
+        <h1>🌤️ 실시간 날씨 정보</h1>
+        <div class="search-box">
+            <select id="regionSelect">
+                <option value="seoul" selected>서울</option>
+                <option value="busan">부산</option>
+                <option value="daegu">대구</option>
+                <option value="광주">광주</option>
+            </select>
+            <button id="searchBtn">조회하기</button>
+        </div>
+        <div class="weather-info">
+            <p id="locationName">지역: 서울시</p>
+            <p id="tempDisplay">현재 기온: 불러오는 중...</p>
+        </div>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
