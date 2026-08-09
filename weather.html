@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>동네 날씨 · 관측소</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-0:#0A1220;
+    --bg-1:#111C33;
+    --panel:#16213F;
+    --panel-edge:#25335A;
+    --text-hi:#EFF3FB;
+    --text-mid:#9FB0D3;
+    --text-lo:#5D6B8E;
+    --amber:#F2A93B;
+    --cyan:#57D6E8;
+    --rose:#EA6E6E;
+    --grid-line:rgba(159,176,211,0.09);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, #1B2A52 0%, transparent 60%),
+      radial-gradient(ellipse 700px 500px at 110% 10%, #1A2444 0%, transparent 55%),
+      linear-gradient(180deg, var(--bg-0), var(--bg-1) 60%, var(--bg-0));
+    background-attachment:fixed;
+    color:var(--text-hi);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    padding:28px 16px 60px;
+  }
+  .wrap{max-width:760px;margin:0 auto;}
+
+  /* header / station strip */
+  .station-strip{
+    display:flex; align-items:baseline; justify-content:space-between;
+    border-bottom:1px solid var(--panel-edge);
+    padding-bottom:14px; margin-bottom:22px;
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .station-strip .tag{font-size:11px; letter-spacing:.14em; color:var(--text-lo); text-transform:uppercase;}
+  .station-strip .id{font-size:11px; color:var(--text-mid);}
+  #now-clock{font-size:11px; color:var(--text-mid);}
+
+  h1{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:26px;
+    margin:0 0 4px;
+    letter-spacing:-0.01em;
+  }
+  .sub{color:var(--text-mid); font-size:13.5px; margin-bottom:22px;}
+
+  select{
+    background:var(--panel); color:var(--text-hi);
+    border:1px solid var(--panel-edge); border-radius:8px;
+    padding:9px 12px; font-family:'Inter',sans-serif; font-size:14px;
+    outline:none; cursor:pointer;
+  }
+  select:focus{border-color:var(--cyan);}
+
+  .controls{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:26px;}
+  .btn{
+    background:transparent; color:var(--text-mid);
+    border:1px solid var(--panel-edge); border-radius:8px;
+    padding:9px 14px; font-family:'Inter',sans-serif; font-size:13.5px;
+    cursor:pointer; transition:border-color .15s, color .15s;
+  }
+  .btn:hover{border-color:var(--cyan); color:var(--text-hi);}
+  .btn:focus-visible, select:focus-visible{outline:2px solid var(--cyan); outline-offset:2px;}
+
+  /* hero readout */
+  .hero{
+    background:linear-gradient(160deg, var(--panel), var(--bg-1));
+    border:1px solid var(--panel-edge);
+    border-radius:16px;
+    padding:30px 28px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:20px; margin-bottom:20px;
+    position:relative; overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(180deg, var(--grid-line) 0, var(--grid-line) 1px, transparent 1px, transparent 28px);
+    pointer-events:none;
+  }
+  .hero-left{position:relative; z-index:1;}
+  .hero-icon{font-size:56px; line-height:1;}
+  .hero-right{text-align:right; position:relative; z-index:1;}
+  .temp-now{
+    font-family:'IBM Plex Mono',monospace; font-weight:600;
+    font-size:56px; line-height:1; letter-spacing:-0.02em;
+  }
+  .temp-now span{font-size:24px; color:var(--text-mid); font-weight:400;}
+  .sky-desc{font-family:'Space Grotesk',sans-serif; font-size:16px; color:var(--text-mid); margin-top:6px;}
+  .loc-name{font-family:'Space Grotesk',sans-serif; font-size:14px; color:var(--text-lo); margin-bottom:8px; letter-spacing:.02em;}
+
+  /* instrument panel */
+  .panel-title{
+    font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--text-lo); margin:26px 0 10px 2px;
+  }
+  .instrument-grid{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:8px;
+  }
+  .cell{
+    background:var(--panel); border:1px solid var(--panel-edge); border-radius:10px;
+    padding:14px 12px;
+  }
+  .cell .k{font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--text-lo); letter-spacing:.08em; margin-bottom:6px;}
+  .cell .v{font-family:'IBM Plex Mono',monospace; font-size:19px; font-weight:600; color:var(--text-hi);}
+  .cell .v.amber{color:var(--amber);}
+  .cell .v.cyan{color:var(--cyan);}
+  .cell .v.rose{color:var(--rose);}
+
+  /* hourly strip */
+  .hourly-scroll{
+    display:flex; gap:8px; overflow-x:auto; padding:4px 2px 14px;
+    scrollbar-width:thin;
+  }
+  .hour-card{
+    flex:0 0 auto; width:76px;
+    background:var(--panel); border:1px solid var(--panel-edge); border-radius:12px;
+    padding:12px 8px; text-align:center;
+  }
+  .hour-card .t{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-lo); margin-bottom:8px;}
+  .hour-card .ic{font-size:22px; margin-bottom:8px;}
+  .hour-card .tp{font-family:'IBM Plex Mono',monospace; font-size:15px; font-weight:600;}
+  .hour-card .pop{font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--cyan); margin-top:4px;}
+
+  .status{
+    font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--text-lo);
+    padding:14px; border:1px dashed var(--panel-edge); border-radius:10px; margin-top:10px;
+  }
+  .status.err{color:var(--rose); border-color:var(--rose);}
+  .footnote{font-size:11.5px; color:var(--text-lo); margin-top:30px; line-height:1.7;}
+
+  @media (max-width:520px){
+    .instrument-grid{grid-template-columns:repeat(2,1fr);}
+    .hero{flex-direction:column; align-items:flex-start;}
+    .hero-right{text-align:left;}
+    .temp-now{font-size:44px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="station-strip">
+    <span class="tag">기상청 동네예보 · 실황 관측</span>
+    <span class="id" id="now-clock">--</span>
+  </div>
+
+  <h1>동네 날씨</h1>
+  <div class="sub">지역을 선택하면 초단기실황과 단기예보를 불러옵니다.</div>
+
+  <div class="controls">
+    <select id="region-select"></select>
+    <button class="btn" id="refresh-btn">새로고침</button>
+  </div>
+
+  <div id="content">
+    <div class="status" id="status">지역을 선택하면 자동으로 조회합니다.</div>
+  </div>
+
+  <div class="footnote">
+    자료 제공: 기상청 단기예보 조회서비스(VilageFcstInfoService 2.0), data.go.kr · 브라우저에서 공공데이터포털 API를 직접 호출합니다. 발급 직후에는 승인까지 최대 1~2시간이 걸릴 수 있고, 네트워크/보안 정책에 따라 요청이 차단될 수 있습니다.
+  </div>
+</div>
+
+<script>
+const SERVICE_KEY = "tGMuabKhkbKLnzpM8CFURLyFrL1TIFdqHd7kl2nFTjvD8RsI3oX+DQ6wec54tPtF4ScdBDivxovt9aSlNiBA9A==";
+const BASE = "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0";
+
+// 기상청 격자좌표 (nx, ny) — 주요 지역
+const REGIONS = [
+  { name: "서울", nx: 60, ny: 127 },
+  { name: "부산", nx: 98, ny: 76 },
+  { name: "대구", nx: 89, ny: 90 },
+  { name: "인천", nx: 55, ny: 124 },
+  { name: "광주", nx: 58, ny: 74 },
+  { name: "대전", nx: 67, ny: 100 },
+  { name: "울산", nx: 102, ny: 84 },
+  { name: "세종", nx: 66, ny: 103 },
+  { name: "수원", nx: 60, ny: 121 },
+  { name: "춘천", nx: 73, ny: 134 },
+  { name: "청주", nx: 69, ny: 106 },
+  { name: "전주", nx: 63, ny: 89 },
+  { name: "목포", nx: 50, ny: 67 },
+  { name: "포항", nx: 102, ny: 94 },
+  { name: "창원", nx: 91, ny: 77 },
+  { name: "제주", nx: 52, ny: 38 },
+  { name: "강릉", nx: 92, ny: 131 },
+];
+
+const select = document.getElementById("region-select");
+REGIONS.forEach((r, i) => {
+  const opt = document.createElement("option");
+  opt.value = i;
+  opt.textContent = r.name;
+  select.appendChild(opt);
+});
+select.value = 0;
+
+function pad(n){ return String(n).padStart(2, "0"); }
+
+function fmtDate(d){
+  return `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}`;
+}
+
+// 초단기실황: 매시 40분 발표, 10분 뒤 제공 -> 여유있게 45분 기준
+function getNcstBaseTime(){
+  const now = new Date();
+  const d = new Date(now);
+  if (now.getMinutes() < 45) d.setHours(d.getHours() - 1);
+  return { base_date: fmtDate(d), base_time: pad(d.getHours()) + "00" };
+}
+
+// 단기예보: 02,05,08,11,14,17,20,23시 발표, 약 10분 뒤 제공
+function getVilageBaseTime(){
+  const slots = [2,5,8,11,14,17,20,23];
+  const now = new Date();
+  const d = new Date(now);
+  let hour = now.getHours();
+  let minute = now.getMinutes();
+  let candidates = slots.filter(h => h < hour || (h === hour && minute >= 15));
+  if (candidates.length === 0){
+    d.setDate(d.getDate() - 1);
+    return { base_date: fmtDate(d), base_time: "2300" };
+  }
+  const chosen = Math.max(...candidates);
+  return { base_date: fmtDate(d), base_time: pad(chosen) + "00" };
+}
+
+async function callApi(path, params){
+  const url = new URL(`${BASE}/${path}`);
+  url.searchParams.set("serviceKey", SERVICE_KEY);
+  url.searchParams.set("dataType", "JSON");
+  url.searchParams.set("pageNo", "1");
+  Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, v));
+  const res = await fetch(url.toString());
+  const text = await res.text();
+  let json;
+  try { json = JSON.parse(text); }
+  catch(e){ throw new Error("응답을 해석할 수 없습니다 (XML 오류 응답 가능성). 키 승인 상태를 확인하세요."); }
+  const header = json?.response?.header;
+  if (!header || header.resultCode !== "00"){
+    throw new Error(header ? `${header.resultMsg} (${header.resultCode})` : "알 수 없는 오류");
+  }
+  return json.response.body.items.item;
+}
+
+function skyIcon(sky, pty){
+  pty = Number(pty); sky = Number(sky);
+  if (pty === 1 || pty === 5) return "🌧️";
+  if (pty === 2 || pty === 6) return "🌨️";
+  if (pty === 3 || pty === 7) return "❄️";
+  if (pty === 4) return "⛈️";
+  if (sky === 1) return "☀️";
+  if (sky === 3) return "⛅";
+  if (sky === 4) return "☁️";
+  return "🌤️";
+}
+function skyDesc(sky, pty){
+  pty = Number(pty); sky = Number(sky);
+  if (pty === 1) return "비";
+  if (pty === 2) return "비/눈";
+  if (pty === 3) return "눈";
+  if (pty === 4) return "소나기";
+  if (pty === 5) return "빗방울";
+  if (pty === 6) return "빗방울날림";
+  if (pty === 7) return "눈날림";
+  if (sky === 1) return "맑음";
+  if (sky === 3) return "구름많음";
+  if (sky === 4) return "흐림";
+  return "-";
+}
+
+function updateClock(){
+  const now = new Date();
+  document.getElementById("now-clock").textContent =
+    `${fmtDate(now)} ${pad(now.getHours())}:${pad(now.getMinutes())} KST`;
+}
+updateClock();
+setInterval(updateClock, 30000);
+
+async function loadWeather(){
+  const region = REGIONS[Number(select.value)];
+  const content = document.getElementById("content");
+  content.innerHTML = `<div class="status">${region.name} 날씨를 불러오는 중...</div>`;
+
+  try {
+    const ncstTime = getNcstBaseTime();
+    const ncstItems = await callApi("getUltraSrtNcst", {
+      numOfRows: 20, nx: region.nx, ny: region.ny,
+      base_date: ncstTime.base_date, base_time: ncstTime.base_time
+    });
+
+    const readings = {};
+    ncstItems.forEach(it => { readings[it.category] = it.obsrValue; });
+    // T1H 기온, REH 습도, WSD 풍속, PTY 강수형태, RN1 1시간강수량
+
+    const vilTime = getVilageBaseTime();
+    const vilItems = await callApi("getVilageFcst", {
+      numOfRows: 400, nx: region.nx, ny: region.ny,
+      base_date: vilTime.base_date, base_time: vilTime.base_time
+    });
+
+    // 다음 몇 시간 시간대별 예보 구성
+    const byTime = {};
+    vilItems.forEach(it => {
+      const key = `${it.fcstDate}_${it.fcstTime}`;
+      if (!byTime[key]) byTime[key] = { date: it.fcstDate, time: it.fcstTime };
+      byTime[key][it.category] = it.fcstValue;
+    });
+    const sortedKeys = Object.keys(byTime).sort();
+    const now = new Date();
+    const nowKey = `${fmtDate(now)}_${pad(now.getHours())}00`;
+    let futureKeys = sortedKeys.filter(k => k >= nowKey).slice(0, 8);
+    if (futureKeys.length === 0) futureKeys = sortedKeys.slice(0, 8);
+
+    const curPTY = readings["PTY"] ?? "0";
+    const curSky = byTime[futureKeys[0]]?.SKY ?? "1";
+    const curTemp = readings["T1H"];
+
+    const hourlyHtml = futureKeys.map(k => {
+      const f = byTime[k];
+      const hh = f.time.slice(0,2);
+      return `
+        <div class="hour-card">
+          <div class="t">${hh}시</div>
+          <div class="ic">${skyIcon(f.SKY, f.PTY)}</div>
+          <div class="tp">${f.TMP ?? "-"}°</div>
+          <div class="pop">${f.POP ?? "0"}%</div>
+        </div>`;
+    }).join("");
+
+    content.innerHTML = `
+      <div class="hero">
+        <div class="hero-left">
+          <div class="loc-name">${region.name} · NX ${region.nx} / NY ${region.ny}</div>
+          <div class="hero-icon">${skyIcon(curSky, curPTY)}</div>
+        </div>
+        <div class="hero-right">
+          <div class="temp-now">${curTemp ?? "-"}<span>°C</span></div>
+          <div class="sky-desc">${skyDesc(curSky, curPTY)}</div>
+        </div>
+      </div>
+
+      <div class="panel-title">실황 계기판</div>
+      <div class="instrument-grid">
+        <div class="cell"><div class="k">기온</div><div class="v amber">${readings["T1H"] ?? "-"}°C</div></div>
+        <div class="cell"><div class="k">습도</div><div class="v cyan">${readings["REH"] ?? "-"}%</div></div>
+        <div class="cell"><div class="k">풍속</div><div class="v">${readings["WSD"] ?? "-"} m/s</div></div>
+        <div class="cell"><div class="k">1시간 강수</div><div class="v rose">${readings["RN1"] ?? "0"} mm</div></div>
+      </div>
+
+      <div class="panel-title">시간별 예보</div>
+      <div class="hourly-scroll">${hourlyHtml}</div>
+    `;
+  } catch(err){
+    content.innerHTML = `<div class="status err">오류: ${err.message}<br>※ 공공데이터포털에서 이 서비스에 대한 활용신청이 승인되었는지, 그리고 브라우저가 CORS로 요청을 막고 있지 않은지 확인해 주세요.</div>`;
+  }
+}
+
+select.addEventListener("change", loadWeather);
+document.getElementById("refresh-btn").addEventListener("click", loadWeather);
+loadWeather();
+</script>
+</body>
+</html>
