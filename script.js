@@ -1,4 +1,4 @@
-const API_KEY = 'tGMuabKhkbKLnzpM8CFURLyFrL1TIFdqHd7kl2nFTjvD8RsI3oX+DQ6wec54tPtF4ScdBDivxovt9aSlNiBA9A==';
+const API_KEY = tGMuabKhkbKLnzpM8CFURLyFrL1TIFdqHd7kl2nFTjvD8RsI3oX+DQ6wec54tPtF4ScdBDivxovt9aSlNiBA9A==;
 
 // 주요 지역별 기상청 격자 X, Y 좌표
 const regions = {
